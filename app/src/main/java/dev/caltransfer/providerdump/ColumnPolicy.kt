@@ -126,9 +126,12 @@ object ColumnPolicy {
      *  - selfAttendeeStatus is the source user's own RSVP. On the destination the user is a
      *    different account, so replaying "accepted" or "declined" would assert a reply that
      *    was never made. The provider rebuilds this column from the attendee rows.
-     *  - customAppPackage / customAppUri are not display metadata: they form an ACL that lets
-     *    the named app edit the event, and they point at an app that need not exist on the
-     *    destination. Copying them can lock the destination user out of their own events.
+     *  - customAppPackage / customAppUri point at the app that owns the event's UI rather than
+     *    describing the event. CalendarContract hands such an event to that package through
+     *    ACTION_HANDLE_CUSTOM_EVENT, passing the URI as an opaque extra whose form the platform
+     *    never defines, resolves or validates. So the importer cannot tell a valid pointer from a
+     *    stale one, the package need not exist on the destination, and a stale pointer would fail
+     *    silently.
      *  - original_sync_id identifies the parent series inside the *source* account's sync
      *    namespace and is meaningless once the destination provider has reassigned ids.
      *
@@ -204,7 +207,8 @@ object ColumnPolicy {
         "selfAttendeeStatus" to "copied from the attendee rows by the provider",
         "original_sync_id / originalAllDay" to "recurrence bookkeeping derived from the parent",
         "customAppPackage / customAppUri" to
-            "an ACL naming an app that can edit the event; copying it would restrict editing on the destination",
+            "a pointer to the app that owns the event's UI, with an opaque URI only that app can " +
+                "read, so nothing on the destination can tell a valid pointer from a stale one",
         "attendeeIdentity / attendeeIdNamespace" to
             "the source account's identity namespace, meaningless for the destination user",
         "calendar_displayName / calendar_color / visible / calendar_access_level and the rest of Calendars" to

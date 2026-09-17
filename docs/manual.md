@@ -81,9 +81,10 @@ attendees with their replies, plus all reminders.
 Fields that describe the source device, its account or the containing app are excluded on
 purpose: copying them would be wrong on the destination even though it would look like "less
 loss". Sync bookkeeping belongs to the source account's adapter; row identity is reassigned by
-the destination provider; `selfAttendeeStatus` is the source user's own reply and would assert a
-reply that was never made; `customAppPackage`/`customAppUri` form an ACL that can lock you out of
-editing your own events; `attendeeIdentity` and `attendeeIdNamespace` are the source account's
+the destination provider; `selfAttendeeStatus` is recomputed from the attendee rows, and only
+from the attendee whose address matches the destination calendar's owner account;
+`customAppPackage`/`customAppUri` point at the app that owns the event's UI, with an opaque URI
+that only that app can read; `attendeeIdentity` and `attendeeIdNamespace` are the source account's
 identity namespace; `*_color_index` values are keys that may not resolve on the destination; and
 the `lastDate` / `displayColor` / `has*` / `isOrganizer` / `canInviteOthers` family is computed by
 the provider from the data that *is* copied.

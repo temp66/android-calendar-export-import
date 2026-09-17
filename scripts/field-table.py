@@ -123,10 +123,12 @@ VERIFY_REMINDER_FIELDS = set(POLICY_SETS["VERIFY_REMINDER_FIELDS"])
 
 R_SYNC = ("sync bookkeeping owned by the source account's adapter: meaningless in another "
           "account, and the destination provider rewrites it anyway")
-R_ACL = ("a pointer to the app that owns this event's UI, not event content: the calendar app "
-         "hands such an event to that package through ACTION_HANDLE_CUSTOM_EVENT, and the paired "
-         "URI is that app's own identifier for it. Neither can travel: the package need not exist "
-         "on the destination, and the URI names a record in the source device's copy of that app")
+R_APP_LINK = ("a pointer to the app that owns this event's UI, not event content. The calendar app "
+         "hands such an event to that package through ACTION_HANDLE_CUSTOM_EVENT, passing the "
+         "paired URI as an opaque extra: the platform defines no form for it, never resolves or "
+         "validates it, and only that app can interpret it. So nothing on the destination can "
+         "tell a still-valid pointer from a stale one, the package need not exist there, and a "
+         "stale pointer would fail silently")
 R_IDENT = "the source account's identity / sync namespace, which does not exist for the destination user"
 R_DERIVED = "recomputed by the destination provider from the data that is copied"
 R_COLORKEY = ("a colour **key**; an unresolvable key either fails the insert outright or silently "
@@ -212,7 +214,7 @@ def verdict(table, column):
         return "remapped", REMAPPED[column]
     if table == "Events":
         if column in ("customAppPackage", "customAppUri"):
-            return "no", R_ACL
+            return "no", R_APP_LINK
         if column == "original_sync_id":
             return "no", R_IDENT
         if column in COLOR_KEY:

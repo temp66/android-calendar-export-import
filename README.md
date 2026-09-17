@@ -10,8 +10,8 @@ Moving a calendar off a phone normally means an export, a cloud account, or a US
 session. If the app has no export, the device has no Google Play services and the bootloader is
 locked, the only route left is the system calendar provider itself — and the usual trick, asking
 a third-party app to serialise everything to ICS, silently drops a lot: calendar grouping,
-colours, guest permissions, per-event ACLs, email and SMS reminders, and often the link between
-a recurring series and its edited instances.
+colours, guest permissions, the link to an app that owns an event's richer UI, email and SMS
+reminders, and often the link between a recurring series and its edited instances.
 
 This app takes the other route. It dumps every column of every provider table to a JSON file,
 then inserts events, recurrence overrides, attendees and reminders into a calendar that already
@@ -88,8 +88,8 @@ the sync-adapter parameter, an event needs a calendar id, a time zone, a start a
 end or duration, an unparseable `RRULE` is rejected, a recurrence exception may only set the
 provider's whitelist and inherits the rest from its series, and a batch that fails as a whole is
 retried row by row so one bad row cannot lose a hundred good ones. They also assert that
-identity-, ACL- and sync-owned columns are never written, that importing the same backup twice
-creates nothing, and that a 5,000-event calendar imports in seconds.
+identity-, app-link- and sync-owned columns are never written, that importing the same backup
+twice creates nothing, and that a 5,000-event calendar imports in seconds.
 
 ## Licence
 
