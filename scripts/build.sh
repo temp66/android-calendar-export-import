@@ -25,7 +25,12 @@ fi
 
 ./gradlew test assembleDebug "$@"
 
+# AGP names the artifact after the module, so the build tree holds app-debug.apk. The name that
+# leaves this script is a distribution concern, and this is where it is decided.
+DIST_NAME="android-calendar-export-import"
+
 mkdir -p "$ROOT/outputs"
-apk=$(ls -t "$ROOT"/app/build/outputs/apk/debug/*.apk | head -1)
-cp "$apk" "$ROOT/outputs/"
-echo "[build] wrote $ROOT/outputs/$(basename "$apk")"
+apk="$ROOT/app/build/outputs/apk/debug/app-debug.apk"
+[ -f "$apk" ] || { echo "expected $apk, but it was not produced" >&2; exit 1; }
+cp "$apk" "$ROOT/outputs/$DIST_NAME-debug.apk"
+echo "[build] wrote $ROOT/outputs/$DIST_NAME-debug.apk"

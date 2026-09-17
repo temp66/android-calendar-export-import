@@ -38,15 +38,6 @@ android {
     }
 }
 
-// Name the artifact after the project rather than the module, so a download says what it is.
-androidComponents {
-    onVariants { variant ->
-        variant.outputs.forEach { output ->
-            output.outputFileName.set("android-calendar-export-import-${variant.name}.apk")
-        }
-    }
-}
-
 dependencies {
     // No third-party runtime dependencies: JSON comes from the platform's org.json.
     testImplementation(libs.junit)

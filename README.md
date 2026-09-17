@@ -1,4 +1,4 @@
-# Android calendar export and import
+# Android Calendar Export and Import
 
 A sideloaded Android app that exports a calendar from one device to a single JSON file and
 imports it into another, by reading the system calendar provider directly and replaying it

@@ -32,9 +32,7 @@ There are four ways data can land on the target, and only the first is implement
 | 3 | No account at all | registering an `AccountAuthenticator` (the ICSx⁵ model) plus a calendar | no |
 | 4 | A device-local calendar | same as case 2 with `account_type=LOCAL` | no |
 
-Case 1 is also what makes "local" versus "Google" stop being a mode: the picker lists every
-writable calendar on the device, and a device-local calendar is simply one of the entries. If
-the target account has no calendar yet, create one in your calendar app first (two taps) and
+If the target account has no calendar yet, create one in your calendar app first (two taps) and
 reopen the screen.
 
 ## Installing
@@ -57,8 +55,7 @@ Move the file to the target device (USB, SD card, cloud, whatever).
 
 On the **target** device:
 
-1. Make sure the destination account already has a calendar. Google Calendar creates a default
-   one when the account is added.
+1. Make sure the destination account already has a calendar.
 2. *Choose backup file to import*.
 3. Pick the destination calendar, tick the source calendars you want, leave *Skip events already
    in the destination calendar* on, and press *Start import*.

@@ -11,16 +11,12 @@ captures/
 
 # Toolchain provisioned by scripts/bootstrap-toolchain.sh, plus its downloaded archives
 tools/
-work/dl/
-work/ca/
+work/
 
 # Built APKs are published as release assets, not committed
 outputs/
 
-# Scratch
-work/*.json
-work/*.html
 
-# Python bytecode from scripts/fields-table.py
+# Python bytecode from scripts/field-table.py
 __pycache__/
 *.pyc
