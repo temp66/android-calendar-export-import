@@ -17,9 +17,9 @@ if [ -z "${JAVA_HOME:-}" ]; then
   echo "JAVA_HOME is not set. Install JDK 17, or run scripts/bootstrap-toolchain.sh." >&2
   exit 1
 fi
-if [ -z "${ANDROID_HOME:-}" ] && [ -z "${ANDROID_SDK_ROOT:-}" ] && [ ! -f "$ROOT/local.properties" ]; then
-  echo "No Android SDK found. Set ANDROID_HOME, add sdk.dir to local.properties, or run" >&2
-  echo "scripts/bootstrap-toolchain.sh." >&2
+if [ -z "${ANDROID_HOME:-}" ] && [ -z "${ANDROID_SDK_ROOT:-}" ]; then
+  echo "No Android SDK found. Set ANDROID_HOME/ANDROID_SDK_ROOT, or run" >&2
+  echo "scripts/bootstrap-toolchain.sh to provision one under tools/." >&2
   exit 1
 fi
 

@@ -13,7 +13,6 @@ captures/
 tools/
 work/dl/
 work/ca/
-scripts/env.sh
 
 # Built APKs are published as release assets, not committed
 outputs/

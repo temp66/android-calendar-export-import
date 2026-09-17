@@ -54,7 +54,7 @@ scripts/build.sh                 # the same, then copies the APK to outputs/
 On a machine with neither a JDK nor the SDK — a container or a bare CI runner:
 
 ```bash
-scripts/bootstrap-toolchain.sh   # provisions tools/ (about 2 GB) and writes local.properties
+scripts/bootstrap-toolchain.sh   # provisions tools/ (about 2 GB)
 ```
 
 The Gradle wrapper pins Gradle 9.6.0 and `gradle/libs.versions.toml` pins every plugin and
