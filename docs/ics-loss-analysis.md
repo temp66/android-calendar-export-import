@@ -1,4 +1,4 @@
-# Android calendar export and import: what an ICS round trip preserves and what it loses
+# Android Calendar Export and Import: what an ICS round trip preserves and what it loses
 
 > This is the analysis that motivated this repository's tool. For the app that avoids these
 > losses by replaying the provider's own data instead of serialising to ICS, see the
