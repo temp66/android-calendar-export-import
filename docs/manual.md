@@ -116,8 +116,8 @@ approach cannot reach its data.
 *Verify* re-reads the destination calendar and diffs it field by field against the backup. It
 compares exactly the columns the write path can preserve — including the null case of the colour
 fields, since a null colour means "inherit the calendar's colour" and must not become black — and
-compares attendees and reminders as sets. It then prints a fixed *not checked, expected loss*
-list so that a known limitation never looks like a bug and a real one is never hidden.
+compares attendees and reminders as sets. It then prints a fixed *not compared, and why* list, so
+that a known limitation never looks like a bug and a real one is never hidden.
 
 ## Building and testing
 

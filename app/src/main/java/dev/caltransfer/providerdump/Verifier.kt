@@ -126,7 +126,7 @@ class Verifier(private val gateway: ProviderGateway) {
                 appendLine("No differences in the fields this transfer can preserve.")
                 appendLine()
             }
-            appendLine("-- Not checked, expected loss --")
+            appendLine("-- Not compared, and why --")
             ColumnPolicy.EXPECTED_LOSS.forEach { (field, reason) ->
                 appendLine("  $field")
                 appendLine("      $reason")

@@ -10,7 +10,7 @@ Two sources, so the table cannot drift from either:
 
 Run it after changing either:
 
-    scripts/fields-table.py
+    scripts/field-table.py
 """
 
 import pathlib
@@ -123,15 +123,18 @@ VERIFY_REMINDER_FIELDS = set(POLICY_SETS["VERIFY_REMINDER_FIELDS"])
 
 R_SYNC = ("sync bookkeeping owned by the source account's adapter: meaningless in another "
           "account, and the destination provider rewrites it anyway")
-R_ACL = ("an ACL naming an app that may edit the event, pointing at an app the destination need "
-         "not have; copying it can lock you out of editing your own events")
+R_ACL = ("a pointer to the app that owns this event's UI, not event content: the calendar app "
+         "hands such an event to that package through ACTION_HANDLE_CUSTOM_EVENT, and the paired "
+         "URI is that app's own identifier for it. Neither can travel: the package need not exist "
+         "on the destination, and the URI names a record in the source device's copy of that app")
 R_IDENT = "the source account's identity / sync namespace, which does not exist for the destination user"
-R_DERIVED = "computed by the provider from the data that *is* copied, so writing it would be pointless"
+R_DERIVED = "recomputed by the destination provider from the data that is copied"
 R_COLORKEY = ("a colour **key**; an unresolvable key either fails the insert outright or silently "
               "nulls the colour, so only the literal colour is written")
 R_OWNED = "a calendar attribute surfaced on the event row; the destination calendar already exists and keeps its own"
-R_RSVP = ('it is the **source** user\'s own reply; replaying "accepted" on another account would '
-          'assert a reply that was never made')
+R_RSVP = ("the provider recomputes it from the attendee rows, but only from the attendee whose "
+          "address equals the destination calendar's owner account, so it can end up 'none' when "
+          "the source and target accounts differ. The reply itself is carried by that attendee row")
 R_LOCAL = ("local row identity; the destination provider assigns its own and the backup id is "
            "used only to remap relationships")
 R_CAL = "the destination calendar already exists, so its name, colour, visibility and limits are left untouched"
@@ -140,8 +143,23 @@ R_EXT = "the ExtendedProperties table is writable only by a sync adapter, which 
 R_COLORS = "the Colors table is writable only by a sync adapter, which this app is not"
 
 REMAPPED = {
+    "_id": R_LOCAL,
     "calendar_id": "the destination calendar id is written instead",
     "event_id": "rewritten to the new event id the destination provider assigned",
+    "original_id": "set to the new row id of the series when the provider creates the override",
+}
+
+# Not written, but recomputed by the destination provider from data that is copied.
+DERIVED_REASONS = {
+    "selfAttendeeStatus": R_RSVP,
+    "hasAlarm": "recomputed from the reminders that are copied",
+    "hasAttendeeData": "recomputed from the attendee rows that are copied",
+    "hasExtendedProperties": "recomputed from ExtendedProperties, which is not copied, so it reads 0 on the destination",
+    "lastDate": "recomputed from the recurrence rule",
+    "isOrganizer": "recomputed by comparing organizer with the destination calendar's owner account",
+    "canInviteOthers": "computed by the provider from the guest permissions and the access level",
+    "displayColor": "computed as the event colour, falling back to the destination calendar's colour",
+    "originalAllDay": "inherited from the series when the provider creates the override",
 }
 
 # iCalendar support, per column: yes = an RFC 5545 property carries it, partial = carried with a
@@ -190,13 +208,9 @@ def ics_for(table, column):
 
 
 def verdict(table, column):
-    if column == "_id":
-        return "remapped", R_LOCAL
     if column in REMAPPED:
         return "remapped", REMAPPED[column]
     if table == "Events":
-        if column == "selfAttendeeStatus":
-            return "no", R_RSVP
         if column in ("customAppPackage", "customAppUri"):
             return "no", R_ACL
         if column == "original_sync_id":
@@ -205,6 +219,8 @@ def verdict(table, column):
             return "no", R_COLORKEY
         if column in SYNC_ONLY or column in ALWAYS_DROP:
             return "no", R_SYNC
+        if column in DERIVED_REASONS:
+            return "derived", DERIVED_REASONS[column]
         if column in DERIVED:
             return "no", R_DERIVED
         if column in PROVIDER_OWNED:
@@ -305,7 +321,7 @@ def describe(column, doc):
 
 def table(title, blurb, rows, provider_table):
     out = [f"#### `{title}`", "", blurb, "",
-           "| Field | Description | Preserved? | Reason when not preserved | Supported by ICS? |",
+           "| Field | Description | Preserved | Reason when not preserved | Supported by ICS |",
            "|---|---|---|---|---|"]
     for column, doc in rows:
         preserved, reason = verdict(provider_table, column)
@@ -337,11 +353,17 @@ def build(schema):
              [(c, d) for c, d in schema["ColorsColumns"]]
 
     lines = [
-        "Every column of every table the app reads. *Preserved?* answers whether the value appears",
-        "on the destination: **yes**, **no**, or **remapped**, which means it identifies a row that",
-        "the destination provider owns and therefore cannot be carried verbatim.",
+        "Every column of every table the app reads. *Preserved* says what happens to the value on",
+        "the destination:",
         "",
-        "*Supported by ICS?* is there for comparison with an ICS-based transfer: **yes** means an",
+        "- **yes** — written from the backup.",
+        "- **remapped** — not carried verbatim because it identifies a row the destination provider",
+        "  owns; the provider assigns the equivalent itself.",
+        "- **derived** — not written, but recomputed by the destination provider from data that *is*",
+        "  copied, so the information survives even though the column does not.",
+        "- **no** — not reproduced at all; the reason column says why.",
+        "",
+        "*Supported by ICS* is there for comparison with an ICS-based transfer: **yes** means an",
         "RFC 5545 property carries the value, **partial** means it is carried with a caveat, and",
         "**no** means iCalendar has no equivalent at all.",
         "",
