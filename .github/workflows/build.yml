@@ -25,7 +25,14 @@ jobs:
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          # The action's default package list is "tools platform-tools", and the legacy "tools"
+          # package was removed from the SDK repository long ago, so sdkmanager fails with
+          # "Failed to find package 'tools'" and the whole job stops before Gradle ever runs.
+          # Name the packages this build needs instead.
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+          accept-android-sdk-licenses: true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
