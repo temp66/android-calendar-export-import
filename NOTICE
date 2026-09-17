@@ -1,0 +1,9 @@
+Calendar Transporter
+Copyright 2026 the Calendar Transporter authors
+
+This product includes material derived from the Android Open Source Project,
+Copyright (C) 2006 The Android Open Source Project, licensed under Apache-2.0:
+
+  * third_party/aosp/ holds unmodified AOSP sources.
+  * docs/field-table.md quotes column descriptions from
+    frameworks/base/core/java/android/provider/CalendarContract.java.

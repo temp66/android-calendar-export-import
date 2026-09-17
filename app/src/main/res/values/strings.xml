@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  UI chrome only. The scrolling log is diagnostic output and is intentionally not translated;
+  it is marked as such where it is written, in MainActivity.log().
+-->
+<resources>
+    <string name="app_name">Calendar Transporter</string>
+
+    <string name="intro">Exports the whole calendar provider to one JSON file, and replays the events into a calendar that already exists on this device.</string>
+
+    <string name="status_granted">Calendar access granted.</string>
+    <string name="status_not_granted">Calendar access not granted yet.</string>
+    <string name="grant_access">Grant calendar access</string>
+
+    <string name="section_export">1. Export</string>
+    <string name="export_to_file">Export to file</string>
+
+    <string name="section_import">2. Import</string>
+    <string name="choose_backup">Choose backup file to import</string>
+    <string name="destination_label">Destination calendar (must already exist):</string>
+    <string name="skip_existing">Skip events already in the destination calendar</string>
+    <string name="source_label">Source calendars to import:</string>
+    <string name="start_import">Start import</string>
+
+    <string name="section_verify">3. Verify</string>
+    <string name="verify_backup">Verify a backup against the destination</string>
+    <string name="save_report">Save last report</string>
+
+    <string name="section_log">Log</string>
+
+    <string name="no_writable_calendar">No writable calendar found. Create one in your calendar app first, then reopen this screen.</string>
+    <string name="need_destination">Choose a destination calendar first.</string>
+    <string name="need_source">Select at least one source calendar.</string>
+    <string name="empty_backup">This backup contains no events. On the source device that usually means the calendar app does not store its data in the system provider.</string>
+    <string name="no_calendars_in_backup">This backup contains no calendars.</string>
+    <string name="unsupported_schema">That file is not a backup this build understands (schema %1$s, this build writes %2$d).</string>
+    <string name="unnamed_calendar">(unnamed calendar)</string>
+</resources>
