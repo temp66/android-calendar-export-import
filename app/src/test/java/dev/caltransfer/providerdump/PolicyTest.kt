@@ -59,4 +59,18 @@ class PolicyTest {
             .toList()
         assertFalse("these files use the sync adapter parameter: $offenders", offenders.isNotEmpty())
     }
+
+    @Test
+    fun `every compared field is settable on a recurrence override`() {
+        // An override may only carry ColumnPolicy.ALLOWED_IN_EXCEPTION, so a field the verifier
+        // compares but the provider refuses there would be dropped for overrides alone - the kind
+        // of gap that would only show up on one edited instance of a series.
+        val droppedOnOverrides = ColumnPolicy.VERIFY_EVENT_FIELDS
+            .filterNot { it in ColumnPolicy.ALLOWED_IN_EXCEPTION }
+            .filterNot { it == Events.DTEND } // derived from DURATION by the provider
+        assertTrue(
+            "compared but not settable on an override: $droppedOnOverrides",
+            droppedOnOverrides.isEmpty()
+        )
+    }
 }

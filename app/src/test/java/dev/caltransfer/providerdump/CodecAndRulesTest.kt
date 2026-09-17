@@ -99,8 +99,6 @@ class CodecAndRulesTest {
     fun `fields that must not travel are dropped`() {
         val source = baseEvent(
             Events.SELF_ATTENDEE_STATUS to 1L,
-            Events.CUSTOM_APP_PACKAGE to "com.example.app",
-            Events.CUSTOM_APP_URI to "com.example.app://event/1",
             Events.ORIGINAL_SYNC_ID to "src-sync-1",
             Events.EVENT_COLOR_KEY to "color-key-1",
             Events.LAST_DATE to 1_700_003_600_000L,
@@ -124,6 +122,27 @@ class CodecAndRulesTest {
         assertTrue("_id must be dropped", Events._ID !in built)
         assertEquals("uid-1", built[Events.UID_2445])
         assertEquals(1_700_000_000_000L, built[Events.DTSTART])
+    }
+
+    @Test
+    fun `the custom app link survives both the event and the override path`() {
+        // The two paths differ: an event is scrubbed and normalised, an override is additionally
+        // filtered down to ColumnPolicy.ALLOWED_IN_EXCEPTION, so a field missing from that set
+        // would vanish for overrides alone.
+        val source = baseEvent(
+            Events.CUSTOM_APP_PACKAGE to "com.example.custom",
+            Events.CUSTOM_APP_URI to "content://com.example.custom/events/7"
+        )
+
+        val event = EventRules.buildEvent(source, "uid-1")
+        assertEquals("com.example.custom", event[Events.CUSTOM_APP_PACKAGE])
+        assertEquals("content://com.example.custom/events/7", event[Events.CUSTOM_APP_URI])
+
+        source[Events.ORIGINAL_ID] = 5L
+        source[Events.ORIGINAL_INSTANCE_TIME] = 1_700_001_800_000L
+        val override = EventRules.buildException(source, "uid-5")
+        assertEquals("com.example.custom", override[Events.CUSTOM_APP_PACKAGE])
+        assertEquals("content://com.example.custom/events/7", override[Events.CUSTOM_APP_URI])
     }
 
     @Test

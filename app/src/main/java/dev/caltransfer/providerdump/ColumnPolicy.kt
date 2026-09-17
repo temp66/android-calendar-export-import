@@ -212,7 +212,7 @@ object ColumnPolicy {
         "calendar_displayName / calendar_color / visible / calendar_access_level and the rest of Calendars" to
             "the destination calendar already exists and keeps its own metadata",
         "Colors and ExtendedProperties tables" to "writable only by a sync adapter, which this app is not",
-        "uid2445 / eventColor / guestsCan*" to
-            "an account's sync adapter may rewrite these after upload"
+        "uid2445 / eventColor / guestsCan* / customAppUri" to
+            "an account's sync adapter may rewrite or drop columns it does not model after upload"
     )
 }
