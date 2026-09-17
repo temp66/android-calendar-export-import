@@ -3,6 +3,7 @@ package dev.caltransfer.providerdump
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -32,6 +33,12 @@ class TransferTest {
         source.addAttendee(10L, "Bo", "bo@example.test", status = 4L)
         source.addReminder(10L, 15L)
         source.addReminder(13L, -1L, method = 0L)
+        // One event belongs to an app that owns its richer UI. The pair is opaque to us, but it
+        // is part of the event's payload: see ColumnPolicy.NOT_COPIED_AS_IS.
+        source.rows.getValue(Table.EVENTS).first().apply {
+            this[Events.CUSTOM_APP_PACKAGE] = "com.example.custom"
+            this[Events.CUSTOM_APP_URI] = "content://com.example.custom/events/7"
+        }
         return source
     }
 
@@ -100,7 +107,7 @@ class TransferTest {
     }
 
     @Test
-    fun `import never writes identity, sync or acl fields`() {
+    fun `import never writes identity or sync fields`() {
         val destination = FakeGateway()
         destination.addCalendar(100L, "My calendar", "me@example.test", "com.google")
 
@@ -112,12 +119,31 @@ class TransferTest {
             ColumnPolicy.PROVIDER_OWNED_EVENT_COLUMNS +
             ColumnPolicy.NOT_COPIED_AS_IS +
             ColumnPolicy.COLOR_KEY_COLUMNS +
-            setOf("_id", "lastDate", "displayColor", "hasAlarm", "original_id", "customAppUri")
+            setOf("_id", "lastDate", "displayColor", "hasAlarm", "original_id")
         forbidden.forEach { column ->
             assertFalse("$column must never be written", column in destination.writtenColumns)
         }
         assertFalse("attendeeIdentity must not be written", Attendees.IDENTITY in destination.writtenColumns)
         assertFalse("attendeeIdNamespace must not be written", Attendees.ID_NAMESPACE in destination.writtenColumns)
+    }
+
+    @Test
+    fun `the custom app link is copied as-is`() {
+        val destination = FakeGateway()
+        destination.addCalendar(100L, "My calendar", "me@example.test", "com.google")
+
+        Importer(destination, {}).import(
+            backupOf(sourceDevice()), 100L, setOf(1L, 2L), skipExisting = true
+        )
+
+        val standup = destination.rows.getValue(Table.EVENTS)
+            .first { it[Events.TITLE] == "Standup" }
+        assertEquals("com.example.custom", standup[Events.CUSTOM_APP_PACKAGE])
+        assertEquals("content://com.example.custom/events/7", standup[Events.CUSTOM_APP_URI])
+        // Events without such a link stay without one.
+        val dentist = destination.rows.getValue(Table.EVENTS).first { it[Events.TITLE] == "Dentist" }
+        assertNull(dentist[Events.CUSTOM_APP_PACKAGE])
+        assertNull(dentist[Events.CUSTOM_APP_URI])
     }
 
     @Test

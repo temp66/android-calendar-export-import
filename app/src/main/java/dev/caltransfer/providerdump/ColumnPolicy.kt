@@ -126,20 +126,19 @@ object ColumnPolicy {
      *  - selfAttendeeStatus is the source user's own RSVP. On the destination the user is a
      *    different account, so replaying "accepted" or "declined" would assert a reply that
      *    was never made. The provider rebuilds this column from the attendee rows.
-     *  - customAppPackage / customAppUri point at the app that owns the event's UI rather than
-     *    describing the event. CalendarContract hands such an event to that package through
-     *    ACTION_HANDLE_CUSTOM_EVENT, passing the URI as an opaque extra whose form the platform
-     *    never defines, resolves or validates. So the importer cannot tell a valid pointer from a
-     *    stale one, the package need not exist on the destination, and a stale pointer would fail
-     *    silently.
      *  - original_sync_id identifies the parent series inside the *source* account's sync
      *    namespace and is meaningless once the destination provider has reassigned ids.
      *
-     * Keeping UID_2445 is deliberate: an iCalendar UID is designed to travel with the event,
-     * and it is what makes re-imports idempotent.
+     * Two other things are kept deliberately. UID_2445 is an iCalendar UID, designed to travel
+     * with the event, and it is what makes re-imports idempotent. customAppPackage / customAppUri
+     * point at the app that owns the event's richer UI through ACTION_HANDLE_CUSTOM_EVENT; the
+     * URI is opaque to everything but that app, so the link may dangle on the destination, but
+     * that is a state the platform already tolerates (uninstall the app and the same dangling
+     * pointer is left behind) and EventsEntity, the platform's own event-copy helper, carries the
+     * pair. Copying it can only restore a link that would otherwise be lost.
      */
     val NOT_COPIED_AS_IS = setOf(
-        "selfAttendeeStatus", "customAppPackage", "customAppUri", "original_sync_id"
+        "selfAttendeeStatus", "original_sync_id"
     )
 
     /**
@@ -184,7 +183,9 @@ object ColumnPolicy {
         Events.GUESTS_CAN_SEE_GUESTS, Events.UID_2445, Events.EVENT_COLOR,
         // Only set on recurrence overrides, where it is the thing that keeps the edit attached
         // to the right occurrence.
-        Events.ORIGINAL_INSTANCE_TIME
+        Events.ORIGINAL_INSTANCE_TIME,
+        // Opaque to us, but part of the event's payload: see NOT_COPIED_AS_IS above.
+        Events.CUSTOM_APP_PACKAGE, Events.CUSTOM_APP_URI
     )
 
     val VERIFY_ATTENDEE_FIELDS = listOf(
@@ -206,9 +207,6 @@ object ColumnPolicy {
             "isOrganizer / canInviteOthers" to "computed by the provider",
         "selfAttendeeStatus" to "copied from the attendee rows by the provider",
         "original_sync_id / originalAllDay" to "recurrence bookkeeping derived from the parent",
-        "customAppPackage / customAppUri" to
-            "a pointer to the app that owns the event's UI, with an opaque URI only that app can " +
-                "read, so nothing on the destination can tell a valid pointer from a stale one",
         "attendeeIdentity / attendeeIdNamespace" to
             "the source account's identity namespace, meaningless for the destination user",
         "calendar_displayName / calendar_color / visible / calendar_access_level and the rest of Calendars" to

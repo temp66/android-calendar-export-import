@@ -88,8 +88,8 @@ the sync-adapter parameter, an event needs a calendar id, a time zone, a start a
 end or duration, an unparseable `RRULE` is rejected, a recurrence exception may only set the
 provider's whitelist and inherits the rest from its series, and a batch that fails as a whole is
 retried row by row so one bad row cannot lose a hundred good ones. They also assert that
-identity-, app-link- and sync-owned columns are never written, that importing the same backup
-twice creates nothing, and that a 5,000-event calendar imports in seconds.
+identity- and sync-owned columns are never written, that importing the same backup twice creates
+nothing, and that a 5,000-event calendar imports in seconds.
 
 ## Licence
 

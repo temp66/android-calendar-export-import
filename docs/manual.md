@@ -74,7 +74,11 @@ Everything a user sees inside an event: title, notes, location, start and end, a
 time zones, the recurrence rule and its dates, recurrence overrides (re-created through the
 provider's own exception path so they stay attached to their series), cancellations, privacy
 level, availability, organizer, guest permissions, the event colour, the iCalendar UID, and all
-attendees with their replies, plus all reminders.
+attendees with their replies, plus all reminders. The link to an app that owns an event's richer
+UI (`customAppPackage`/`customAppUri`) is copied as-is: the URI is opaque to everything but that
+app, so it may not resolve on the destination, but a dangling link is a state the platform
+already tolerates, and dropping it would lose the link for good even for someone who reinstalls
+the app together with its data.
 
 ## What is deliberately *not* copied
 
@@ -83,10 +87,9 @@ purpose: copying them would be wrong on the destination even though it would loo
 loss". Sync bookkeeping belongs to the source account's adapter; row identity is reassigned by
 the destination provider; `selfAttendeeStatus` is recomputed from the attendee rows, and only
 from the attendee whose address matches the destination calendar's owner account;
-`customAppPackage`/`customAppUri` point at the app that owns the event's UI, with an opaque URI
-that only that app can read; `attendeeIdentity` and `attendeeIdNamespace` are the source account's
-identity namespace; `*_color_index` values are keys that may not resolve on the destination; and
-the `lastDate` / `displayColor` / `has*` / `isOrganizer` / `canInviteOthers` family is computed by
+`attendeeIdentity` and `attendeeIdNamespace` are the source account's identity namespace;
+`*_color_index` values are keys that may not resolve on the destination; and the `lastDate` /
+`displayColor` / `has*` / `isOrganizer` / `canInviteOthers` family is computed by
 the provider from the data that *is* copied.
 
 Each field has its own verdict and reason in the table below.
