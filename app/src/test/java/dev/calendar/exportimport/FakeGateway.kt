@@ -1,8 +1,8 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
  * In-memory provider that enforces the rules the real CalendarProvider2 enforces, so the
- * transfer logic is exercised on the JVM without a device. Every rule below cites the AOSP
+ * export and import logic is exercised on the JVM without a device. Every rule below cites the
  * code it mirrors.
  */
 class FakeGateway : ProviderGateway {

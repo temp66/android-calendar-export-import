@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
  * Turns a dumped Events row into something the provider will accept.

@@ -15,7 +15,7 @@ the destination:
   copied, so the information survives even though the column does not.
 - **no** — not reproduced at all; the reason column says why.
 
-*Supported by ICS* is there for comparison with an ICS-based transfer: **yes** means an
+*Supported by ICS* is there for comparison with an ICS round trip: **yes** means an
 RFC 5545 property carries the value, **partial** means it is carried with a caveat, and
 **no** means iCalendar has no equivalent at all.
 

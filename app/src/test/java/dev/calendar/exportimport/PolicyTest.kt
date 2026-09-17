@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import java.io.File
 import org.junit.Assert.assertFalse
@@ -30,7 +30,7 @@ class PolicyTest {
             .map { it.groupValues[1] }
             .toSet() + "_id" // BaseColumns._ID, inherited rather than redeclared by CalendarContract
 
-        val policy = File(repoRoot(), "app/src/main/java/dev/caltransfer/providerdump/ColumnPolicy.kt")
+        val policy = File(repoRoot(), "app/src/main/java/dev/calendar/exportimport/ColumnPolicy.kt")
         assertTrue("missing ${policy.path}", policy.isFile)
         val referenced = Regex("""^\s*val ([A-Z_]+) = (?:listOf|setOf)\(\s*([^)]*)\)""", RegexOption.MULTILINE)
             .findAll(policy.readText())

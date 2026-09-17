@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
  * Reads the whole provider into a [Backup]. Queries are unrestricted on the provider side, so

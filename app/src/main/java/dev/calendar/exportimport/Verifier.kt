@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
  * Field level comparison of what a backup says should be in a destination calendar against
@@ -123,7 +123,7 @@ class Verifier(private val gateway: ProviderGateway) {
                 appendLine()
             }
             if (missing.isEmpty() && mismatches.isEmpty()) {
-                appendLine("No differences in the fields this transfer can preserve.")
+                appendLine("No differences in the fields this import can preserve.")
                 appendLine()
             }
             appendLine("-- Not compared, and why --")

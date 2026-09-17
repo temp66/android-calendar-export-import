@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

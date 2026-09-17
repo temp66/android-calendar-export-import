@@ -26,5 +26,6 @@ fi
 ./gradlew test assembleDebug "$@"
 
 mkdir -p "$ROOT/outputs"
-cp "$ROOT"/app/build/outputs/apk/debug/*.apk "$ROOT/outputs/calendar-transporter-debug.apk"
-echo "[build] wrote $ROOT/outputs/calendar-transporter-debug.apk"
+apk=$(ls -t "$ROOT"/app/build/outputs/apk/debug/*.apk | head -1)
+cp "$apk" "$ROOT/outputs/"
+echo "[build] wrote $ROOT/outputs/$(basename "$apk")"

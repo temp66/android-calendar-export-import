@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
  * One provider row: column name -> value. Values are null, Long, Double, String or ByteArray.

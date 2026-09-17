@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -380,7 +380,7 @@ class MainActivity : Activity() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "text/plain"
-            putExtra(Intent.EXTRA_TITLE, "calendar-transfer-report.txt")
+            putExtra(Intent.EXTRA_TITLE, "calendar-verify-report.txt")
         }
         startActivityForResult(intent, REQ_SAVE_REPORT)
     }

@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "dev.caltransfer.providerdump"
+    namespace = "dev.calendar.exportimport"
     compileSdk = 36
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
-        applicationId = "dev.caltransfer.providerdump"
+        applicationId = "dev.calendar.exportimport"
         minSdk = 23
         targetSdk = 36
         versionCode = 1
@@ -35,6 +35,15 @@ android {
 
     lint {
         abortOnError = true
+    }
+}
+
+// Name the artifact after the project rather than the module, so a download says what it is.
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("android-calendar-export-import-${variant.name}.apk")
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
  * Column names and write restrictions, taken from AOSP

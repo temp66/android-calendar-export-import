@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "calendar-transporter"
+rootProject.name = "android-calendar-export-import"
 
 include(":app")

@@ -10,7 +10,7 @@
 #   tools/gradle-home          Gradle's user home, kept out of $HOME
 #   tools/android-sdk          cmdline-tools, platform-tools, platform 36, build-tools 36.0.0
 #
-# The network can truncate large transfers, so every download is resumed in a loop until the
+# The network can truncate large downloads, so every download is resumed in a loop until the
 # byte count matches the server's Content-Length.
 set -uo pipefail
 

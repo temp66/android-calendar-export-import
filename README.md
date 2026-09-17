@@ -1,8 +1,9 @@
-# Calendar Transporter
+# Android calendar export and import
 
-A sideloaded Android app that copies a calendar from one device to another by reading the system
-calendar provider directly and replaying it through the provider's own write path. No root, no
-export function in the source app, no ICS, no cloud service.
+A sideloaded Android app that exports a calendar from one device to a single JSON file and
+imports it into another, by reading the system calendar provider directly and replaying it
+through the provider's own write path. No root, no export function in the source app, no ICS, no
+cloud service.
 
 ## The problem
 
@@ -63,7 +64,7 @@ library version, so the build does not drift.
 ## Install
 
 ```bash
-adb install -r outputs/calendar-transporter-debug.apk
+adb install -r outputs/android-calendar-export-import-debug.apk
 ```
 
 Then follow the [manual](docs/manual.md) for the two-device procedure.
@@ -82,14 +83,14 @@ Then follow the [manual](docs/manual.md) for the two-device procedure.
 
 ## Tests
 
-`./gradlew test` runs the unit tests on the JVM. They exercise the transfer logic against an
-in-memory fake provider that mirrors `CalendarProvider2`: sync-only columns are refused without
-the sync-adapter parameter, an event needs a calendar id, a time zone, a start and exactly one of
-end or duration, an unparseable `RRULE` is rejected, a recurrence exception may only set the
-provider's whitelist and inherits the rest from its series, and a batch that fails as a whole is
-retried row by row so one bad row cannot lose a hundred good ones. They also assert that
-identity- and sync-owned columns are never written, that importing the same backup twice creates
-nothing, and that a 5,000-event calendar imports in seconds.
+`./gradlew test` runs the unit tests on the JVM. They exercise the export and import logic
+against an in-memory fake provider that mirrors `CalendarProvider2`: sync-only columns are
+refused without the sync-adapter parameter, an event needs a calendar id, a time zone, a start
+and exactly one of end or duration, an unparseable `RRULE` is rejected, a recurrence exception
+may only set the provider's whitelist and inherits the rest from its series, and a batch that
+fails as a whole is retried row by row so one bad row cannot lose a hundred good ones. They also
+assert that identity- and sync-owned columns are never written, that importing the same backup
+twice creates nothing, and that a 5,000-event calendar imports in seconds.
 
 ## Licence
 

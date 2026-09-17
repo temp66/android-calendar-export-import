@@ -1,7 +1,7 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 /**
- * The single seam between the transfer logic and the calendar provider. The Android
+ * The single seam between the export and import logic and the calendar provider. The Android
  * implementation lives in [AndroidGateway]; tests supply an in-memory fake that enforces the
  * same restrictions the real provider does.
  */

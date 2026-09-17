@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -8,7 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** Full export -> import -> verify cycle against the fake provider. */
-class TransferTest {
+class ExportImportTest {
 
     private fun sourceDevice(): FakeGateway {
         val source = FakeGateway()
@@ -158,7 +158,7 @@ class TransferTest {
 
         assertTrue(report, report.contains("Missing:                         0"))
         assertTrue(report, report.contains("Events with field differences:   0"))
-        assertTrue(report, report.contains("No differences in the fields this transfer can preserve."))
+        assertTrue(report, report.contains("No differences in the fields this import can preserve."))
     }
 
     @Test

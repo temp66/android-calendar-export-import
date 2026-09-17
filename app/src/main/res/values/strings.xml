@@ -4,7 +4,7 @@
   it is marked as such where it is written, in MainActivity.log().
 -->
 <resources>
-    <string name="app_name">Calendar Transporter</string>
+    <string name="app_name">Calendar Export/Import</string>
 
     <string name="intro">Exports the whole calendar provider to one JSON file, and replays the events into a calendar that already exists on this device.</string>
 

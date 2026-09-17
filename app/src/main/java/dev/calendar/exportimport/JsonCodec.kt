@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import org.json.JSONArray
 import org.json.JSONObject

@@ -1,4 +1,4 @@
-# Android calendar transfer: what an ICS round trip preserves and what it loses
+# Android calendar export and import: what an ICS round trip preserves and what it loses
 
 > This is the analysis that motivated this repository's tool. For the app that avoids these
 > losses by replaying the provider's own data instead of serialising to ICS, see the
@@ -290,7 +290,7 @@ ordinary sideloaded app holding `READ_CALENDAR` can read every column of every t
 That preserves essentially everything the provider holds. What it still cannot recover is
 anything the source app kept outside the provider.
 
-## 7. Verification checklist after the transfer
+## 7. Verification checklist after the import
 
 - Event count per source calendar versus per target calendar (watch for the merge in 4.1).
 - Count events with `original_id` set, and confirm each maps to exactly one target event rather
@@ -336,11 +336,11 @@ apps performing the same operations this document proposes:
 
 ### C. What does not exist
 
-No off-the-shelf app performs the raw "dump every table and column to JSON or SQLite" transfer
+No off-the-shelf app performs the raw "dump every table and column to JSON or SQLite" approach
 described in section 6. That was checked against the complete F-Droid catalogue (4,394 apps),
 Play Store listings and GitHub, and the result is consistent: the tools that do a *raw* calendar
 backup are root-based (Swift Backup, Titanium Backup, Neo Backup/oandbackupX) or are
-device-vendor transfer utilities such as Samsung Smart Switch.
+device-vendor migration tools such as Samsung Smart Switch.
 
 So "ship a small exporter" means exactly that: it has to be written. The permissions and APIs
 are available without root, as the apps above demonstrate, but the specific tool is not on a

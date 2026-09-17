@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import java.security.MessageDigest
 
@@ -21,7 +21,9 @@ object ImportKeys {
             append('|').append(row[Events.ALL_DAY] ?: "")
             append('|').append(row[Events.DURATION] ?: row[Events.DTEND] ?: "")
         }
-        return "ctp-" + sha256Hex(basis).take(32)
+        // "cei" marks a UID this app minted (calendar export/import) rather than one that came
+        // with the event.
+        return "cei-" + sha256Hex(basis).take(32)
     }
 
     private fun sha256Hex(text: String): String {

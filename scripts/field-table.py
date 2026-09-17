@@ -5,7 +5,7 @@ Two sources, so the table cannot drift from either:
 
   * the provider schema in third_party/aosp/CalendarContract.java, for the column names and
     their descriptions;
-  * the policy in app/src/main/java/dev/caltransfer/providerdump/ColumnPolicy.kt, parsed here
+  * the policy in app/src/main/java/dev/calendar/exportimport/ColumnPolicy.kt, parsed here
     rather than copied, for the verdicts.
 
 Run it after changing either:
@@ -18,7 +18,7 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 AOSP = ROOT / "third_party/aosp/CalendarContract.java"
-POLICY = ROOT / "app/src/main/java/dev/caltransfer/providerdump/ColumnPolicy.kt"
+POLICY = ROOT / "app/src/main/java/dev/calendar/exportimport/ColumnPolicy.kt"
 DOC = ROOT / "docs/field-table.md"
 BEGIN = "<!-- BEGIN FIELD TABLE -->"
 END = "<!-- END FIELD TABLE -->"
@@ -359,7 +359,7 @@ def build(schema):
         "  copied, so the information survives even though the column does not.",
         "- **no** — not reproduced at all; the reason column says why.",
         "",
-        "*Supported by ICS* is there for comparison with an ICS-based transfer: **yes** means an",
+        "*Supported by ICS* is there for comparison with an ICS round trip: **yes** means an",
         "RFC 5545 property carries the value, **partial** means it is carried with a caveat, and",
         "**no** means iCalendar has no equivalent at all.",
         "",

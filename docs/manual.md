@@ -40,7 +40,7 @@ reopen the screen.
 ## Installing
 
 ```
-adb install -r outputs/calendar-transporter-debug.apk
+adb install -r outputs/android-calendar-export-import-debug.apk
 ```
 
 The app needs `READ_CALENDAR` and `WRITE_CALENDAR`; it asks for them on first launch. There are

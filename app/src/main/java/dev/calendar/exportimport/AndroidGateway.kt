@@ -1,4 +1,4 @@
-package dev.caltransfer.providerdump
+package dev.calendar.exportimport
 
 import android.content.ContentProviderOperation
 import android.content.ContentResolver
