@@ -89,11 +89,6 @@ from the attendee whose address matches the destination calendar's owner account
 `displayColor`, `hasAlarm` and `canInviteOthers` are computed by the provider from the data that
 *is* copied.
 
-`hasAttendeeData` and `isOrganizer` are *not* in that family, despite the name: the provider never
-writes them, the sync adapter supplies them, and Google's own rows carry both as 1 even when an
-event has no attendee rows. They are copied like any other payload column. `hasExtendedProperties`
-is dropped only because the table it describes cannot be written at all.
-
 Each field has its own verdict and reason in the table below.
 
 ## Every field, in full

@@ -110,20 +110,9 @@ object ColumnPolicy {
     )
 
     /**
-     * Events columns the importer must not write. Most of them the provider computes, so writing
-     * would either throw or be silently overwritten:
-     *
-     *  - lastDate, displayColor, hasAlarm, canInviteOthers, original_id and originalAllDay are
-     *    written by the provider itself.
-     *  - hasExtendedProperties is here for a different reason: it merely describes the
-     *    ExtendedProperties table, which cannot be copied at all (sync adapters only), so 0 is
-     *    the honest value on the destination.
-     *
-     * hasAttendeeData and isOrganizer are deliberately *not* here. They read like derived
-     * columns, but the provider never writes either: both are supplied by the sync adapter, and
-     * Google's own rows carry hasAttendeeData = 1 and isOrganizer = 1 even when no attendee rows
-     * exist. Dropping them made imported events claim "information about self only" and lose the
-     * stored organiser flag, so they are copied like any other payload column.
+     * Events columns the importer must not write: the provider computes these, so writing them
+     * would throw or be overwritten, except hasExtendedProperties, which only describes a table
+     * that cannot be copied at all.
      */
     val NOT_WRITTEN_EVENT_COLUMNS = setOf(
         "lastDate", "lastSynced", "displayColor", "hasAlarm", "hasExtendedProperties",
@@ -197,7 +186,7 @@ object ColumnPolicy {
         Events.ORIGINAL_INSTANCE_TIME,
         // Opaque to us, but part of the event's payload: see NOT_COPIED_AS_IS above.
         Events.CUSTOM_APP_PACKAGE, Events.CUSTOM_APP_URI,
-        // Sync-supplied rather than provider-computed: see NOT_WRITTEN_EVENT_COLUMNS above.
+        // Sync-supplied, not provider-computed.
         Events.HAS_ATTENDEE_DATA, Events.IS_ORGANIZER
     )
 
