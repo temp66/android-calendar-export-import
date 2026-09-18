@@ -38,6 +38,8 @@ class ExportImportTest {
         source.rows.getValue(Table.EVENTS).first().apply {
             this[Events.CUSTOM_APP_PACKAGE] = "com.example.custom"
             this[Events.CUSTOM_APP_URI] = "content://com.example.custom/events/7"
+            this[Events.HAS_ATTENDEE_DATA] = 1L
+            this[Events.IS_ORGANIZER] = 1L
         }
         return source
     }
@@ -144,6 +146,25 @@ class ExportImportTest {
         val dentist = destination.rows.getValue(Table.EVENTS).first { it[Events.TITLE] == "Dentist" }
         assertNull(dentist[Events.CUSTOM_APP_PACKAGE])
         assertNull(dentist[Events.CUSTOM_APP_URI])
+    }
+
+    @Test
+    fun `sync supplied flags reach the destination`() {
+        val destination = FakeGateway()
+        destination.addCalendar(100L, "My calendar", "me@example.test", "com.google")
+
+        Importer(destination, {}).import(
+            backupOf(sourceDevice()), 100L, setOf(1L, 2L), skipExisting = true
+        )
+
+        val standup = destination.rows.getValue(Table.EVENTS)
+            .first { it[Events.TITLE] == "Standup" }
+        assertEquals(1L, standup[Events.HAS_ATTENDEE_DATA].asLongOrNull())
+        assertEquals(1L, standup[Events.IS_ORGANIZER].asLongOrNull())
+        // Events that carried neither keep neither.
+        val dentist = destination.rows.getValue(Table.EVENTS).first { it[Events.TITLE] == "Dentist" }
+        assertNull(dentist[Events.HAS_ATTENDEE_DATA])
+        assertNull(dentist[Events.IS_ORGANIZER])
     }
 
     @Test

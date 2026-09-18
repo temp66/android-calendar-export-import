@@ -86,7 +86,7 @@ One row per event or recurring series. The provider surfaces the sync columns on
 | `sync_data8` | sync adapter scratch space | **no** | sync bookkeeping owned by the source account's adapter: meaningless in another account, and the destination provider rewrites it anyway | **no** |
 | `sync_data9` | sync adapter scratch space | **no** | sync bookkeeping owned by the source account's adapter: meaningless in another account, and the destination provider rewrites it anyway | **no** |
 | `sync_data10` | sync adapter scratch space | **no** | sync bookkeeping owned by the source account's adapter: meaningless in another account, and the destination provider rewrites it anyway | **no** |
-| `lastSynced` | pre-edit copy marker | **no** | recomputed by the destination provider from the data that is copied | **no** |
+| `lastSynced` | pre-edit copy marker | **no** | marks the pre-edit duplicate rows the provider keeps; the export excludes those rows entirely | **no** |
 | `dtstart` | Time the event starts in UTC millis since epoch | **yes** | — | yes — `DTSTART` (with `TZID`) |
 | `dtend` | Time the event ends in UTC millis since epoch | **yes** | — | yes — `DTEND` |
 | `duration` | Duration of the event in RFC2445 format | **yes** | — | yes — `DURATION` |
@@ -96,7 +96,7 @@ One row per event or recurring series. The provider surfaces the sync columns on
 | `accessLevel` | Defines how the event shows up for others when the calendar is shared | **yes** | — | partial — `CLASS` has PUBLIC / PRIVATE / CONFIDENTIAL, so the provider's "default" has no form |
 | `availability` | Default access is controlled by the server and will be treated as public on the device | **yes** | — | partial — `TRANSP` is only OPAQUE / TRANSPARENT, so "tentative" has no form |
 | `hasAlarm` | whether the event has a reminder | **derived** | recomputed from the reminders that are copied | **no** |
-| `hasExtendedProperties` | whether the event has extended properties | **derived** | recomputed from ExtendedProperties, which is not copied, so it reads 0 on the destination | **no** |
+| `hasExtendedProperties` | whether the event has extended properties | **no** | only describes the ExtendedProperties table, which this app cannot write | **no** |
 | `rrule` | Recurrence rule for the event | **yes** | — | yes — `RRULE` |
 | `rdate` | Recurrence dates for the event | **yes** | — | yes — `RDATE` |
 | `exrule` | Recurrence exception rule for the event | **yes** | — | **no** — `EXRULE` existed in RFC 2445 but was removed in RFC 5545 |
@@ -106,13 +106,13 @@ One row per event or recurring series. The provider surfaces the sync columns on
 | `originalInstanceTime` | Original instance time of the recurring event for which this event is an exception | **yes** | — | yes — `RECURRENCE-ID` |
 | `originalAllDay` | all-day flag of the source series | **derived** | inherited from the series when the provider creates the override | **no** |
 | `lastDate` | the last date the recurrence repeats on | **derived** | recomputed from the recurrence rule | **no** |
-| `hasAttendeeData` | whether full guest data is present | **derived** | recomputed from the attendee rows that are copied | **no** |
+| `hasAttendeeData` | whether full guest data is present | **yes** | — | **no** |
 | `guestsCanModify` | Whether guests can modify the event | **yes** | — | **no** |
 | `guestsCanInviteOthers` | Whether guests can invite other guests | **yes** | — | **no** |
 | `guestsCanSeeGuests` | Whether guests can see the list of attendees | **yes** | — | **no** |
 | `organizer` | Email of the organizer (owner) of the event | **yes** | — | yes — `ORGANIZER` |
-| `isOrganizer` | whether the user organises this event | **derived** | recomputed by comparing organizer with the destination calendar's owner account | **no** |
-| `canInviteOthers` | whether the user may invite others | **derived** | computed by the provider from the guest permissions and the access level | **no** |
+| `isOrganizer` | whether the user organises this event | **yes** | — | **no** |
+| `canInviteOthers` | whether the user may invite others | **no** | declared by the contract but not exposed by the provider's Events view, so it never appears in an export | **no** |
 | `customAppPackage` | the app that owns this event's richer UI, handed the event through ACTION_HANDLE_CUSTOM_EVENT | **yes** | — | **no** |
 | `customAppUri` | that app's own identifier for the event: opaque to everything else, and left dangling rather than dropped if the app is absent | **yes** | — | **no** |
 | `uid2445` | iCalendar UID for events that arrived from an .ics file | **yes** | — | yes — `UID` |

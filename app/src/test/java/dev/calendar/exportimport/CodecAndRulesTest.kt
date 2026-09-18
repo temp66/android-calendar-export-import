@@ -118,7 +118,7 @@ class CodecAndRulesTest {
         ColumnPolicy.SYNC_ONLY_EVENT_COLUMNS.forEach { assertTrue("$it must be dropped", it !in built) }
         ColumnPolicy.PROVIDER_OWNED_EVENT_COLUMNS.forEach { assertTrue("$it must be dropped", it !in built) }
         ColumnPolicy.COLOR_KEY_COLUMNS.forEach { assertTrue("$it must be dropped", it !in built) }
-        ColumnPolicy.DERIVED_EVENT_COLUMNS.forEach { assertTrue("$it must be dropped", it !in built) }
+        ColumnPolicy.NOT_WRITTEN_EVENT_COLUMNS.forEach { assertTrue("$it must be dropped", it !in built) }
         assertTrue("_id must be dropped", Events._ID !in built)
         assertEquals("uid-1", built[Events.UID_2445])
         assertEquals(1_700_000_000_000L, built[Events.DTSTART])
@@ -144,6 +144,30 @@ class CodecAndRulesTest {
         assertEquals("com.example.custom", override[Events.CUSTOM_APP_PACKAGE])
         assertEquals("content://com.example.custom/events/7", override[Events.CUSTOM_APP_URI])
     }
+
+    @Test
+    fun `sync supplied flags are copied, and the provider's override whitelist still applies`() {
+        // hasAttendeeData and isOrganizer are not computed by the provider; Google's own rows
+        // carry both as 1 even with no attendee rows, so they travel like any payload column.
+        val source = baseEvent(
+            Events.HAS_ATTENDEE_DATA to 1L,
+            Events.IS_ORGANIZER to 1L
+        )
+
+        val event = EventRules.buildEvent(source, "uid-1")
+        assertEquals(1L, builtValue(event, Events.HAS_ATTENDEE_DATA))
+        assertEquals(1L, builtValue(event, Events.IS_ORGANIZER))
+
+        source[Events.ORIGINAL_ID] = 5L
+        source[Events.ORIGINAL_INSTANCE_TIME] = 1_700_001_800_000L
+        val override = EventRules.buildException(source, "uid-5")
+        assertEquals(1L, builtValue(override, Events.HAS_ATTENDEE_DATA))
+        // isOrganizer is not in the provider's exception whitelist, so it cannot be set on an
+        // override; the clone inherits it from the series.
+        assertNull(override[Events.IS_ORGANIZER])
+    }
+
+    private fun builtValue(row: Row, column: String): Long? = row[column].asLongOrNull()
 
     @Test
     fun `override keeps only what an exception may set and synthesises a duration`() {

@@ -65,9 +65,15 @@ class PolicyTest {
         // An override may only carry ColumnPolicy.ALLOWED_IN_EXCEPTION, so a field the verifier
         // compares but the provider refuses there would be dropped for overrides alone - the kind
         // of gap that would only show up on one edited instance of a series.
+        //
+        // Two fields are excluded on purpose. dtend is derived from DURATION by the provider.
+        // isOrganizer is not in the provider's whitelist at all - it throws for it - and the
+        // exception clone inherits the value from the series instead, so the verifier skips it on
+        // overrides for the same reason.
+        val inheritedByOverrides = setOf(Events.DTEND, Events.IS_ORGANIZER)
         val droppedOnOverrides = ColumnPolicy.VERIFY_EVENT_FIELDS
             .filterNot { it in ColumnPolicy.ALLOWED_IN_EXCEPTION }
-            .filterNot { it == Events.DTEND } // derived from DURATION by the provider
+            .filterNot { it in inheritedByOverrides }
         assertTrue(
             "compared but not settable on an override: $droppedOnOverrides",
             droppedOnOverrides.isEmpty()

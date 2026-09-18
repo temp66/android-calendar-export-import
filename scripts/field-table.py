@@ -100,7 +100,7 @@ def parse_policy():
 
     missing = [
         name for name in
-        ("ALWAYS_DROP", "PROVIDER_OWNED_EVENT_COLUMNS", "DERIVED_EVENT_COLUMNS",
+        ("ALWAYS_DROP", "PROVIDER_OWNED_EVENT_COLUMNS", "NOT_WRITTEN_EVENT_COLUMNS",
          "SYNC_ONLY_EVENT_COLUMNS", "COLOR_KEY_COLUMNS", "NOT_COPIED_AS_IS",
          "VERIFY_EVENT_FIELDS", "VERIFY_ATTENDEE_FIELDS", "VERIFY_REMINDER_FIELDS")
         if not sets.get(name)
@@ -113,7 +113,7 @@ def parse_policy():
 POLICY_SETS = parse_policy()
 ALWAYS_DROP = set(POLICY_SETS["ALWAYS_DROP"])
 PROVIDER_OWNED = set(POLICY_SETS["PROVIDER_OWNED_EVENT_COLUMNS"])
-DERIVED = set(POLICY_SETS["DERIVED_EVENT_COLUMNS"])
+NOT_WRITTEN = set(POLICY_SETS["NOT_WRITTEN_EVENT_COLUMNS"])
 SYNC_ONLY = set(POLICY_SETS["SYNC_ONLY_EVENT_COLUMNS"])
 COLOR_KEY = set(POLICY_SETS["COLOR_KEY_COLUMNS"])
 NOT_AS_IS = set(POLICY_SETS["NOT_COPIED_AS_IS"])
@@ -145,17 +145,20 @@ REMAPPED = {
     "original_id": "set to the new row id of the series when the provider creates the override",
 }
 
-# Not written, but recomputed by the destination provider from data that is copied.
+# Not written, and recomputed by the destination provider from data that is copied.
 DERIVED_REASONS = {
     "selfAttendeeStatus": R_RSVP,
     "hasAlarm": "recomputed from the reminders that are copied",
-    "hasAttendeeData": "recomputed from the attendee rows that are copied",
-    "hasExtendedProperties": "recomputed from ExtendedProperties, which is not copied, so it reads 0 on the destination",
     "lastDate": "recomputed from the recurrence rule",
-    "isOrganizer": "recomputed by comparing organizer with the destination calendar's owner account",
-    "canInviteOthers": "computed by the provider from the guest permissions and the access level",
     "displayColor": "computed as the event colour, falling back to the destination calendar's colour",
     "originalAllDay": "inherited from the series when the provider creates the override",
+}
+
+# Also not written, but not because anything recomputes them.
+NOT_WRITTEN_REASONS = {
+    "lastSynced": "marks the pre-edit duplicate rows the provider keeps; the export excludes those rows entirely",
+    "hasExtendedProperties": "only describes the ExtendedProperties table, which this app cannot write",
+    "canInviteOthers": "declared by the contract but not exposed by the provider's Events view, so it never appears in an export",
 }
 
 # iCalendar support, per column: yes = an RFC 5545 property carries it, partial = carried with a
@@ -215,7 +218,9 @@ def verdict(table, column):
             return "no", R_SYNC
         if column in DERIVED_REASONS:
             return "derived", DERIVED_REASONS[column]
-        if column in DERIVED:
+        if column in NOT_WRITTEN_REASONS:
+            return "no", NOT_WRITTEN_REASONS[column]
+        if column in NOT_WRITTEN:
             return "no", R_DERIVED
         if column in PROVIDER_OWNED:
             return "no", R_OWNED

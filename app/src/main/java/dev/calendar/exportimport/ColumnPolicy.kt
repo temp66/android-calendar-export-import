@@ -110,13 +110,24 @@ object ColumnPolicy {
     )
 
     /**
-     * Events columns the provider computes; writing them either throws or is silently
-     * overwritten, so they are dropped rather than fought with.
+     * Events columns the importer must not write. Most of them the provider computes, so writing
+     * would either throw or be silently overwritten:
+     *
+     *  - lastDate, displayColor, hasAlarm, canInviteOthers, original_id and originalAllDay are
+     *    written by the provider itself.
+     *  - hasExtendedProperties is here for a different reason: it merely describes the
+     *    ExtendedProperties table, which cannot be copied at all (sync adapters only), so 0 is
+     *    the honest value on the destination.
+     *
+     * hasAttendeeData and isOrganizer are deliberately *not* here. They read like derived
+     * columns, but the provider never writes either: both are supplied by the sync adapter, and
+     * Google's own rows carry hasAttendeeData = 1 and isOrganizer = 1 even when no attendee rows
+     * exist. Dropping them made imported events claim "information about self only" and lose the
+     * stored organiser flag, so they are copied like any other payload column.
      */
-    val DERIVED_EVENT_COLUMNS = setOf(
-        "lastDate", "lastSynced", "displayColor", "hasAlarm", "hasAttendeeData",
-        "hasExtendedProperties", "isOrganizer", "canInviteOthers", "original_id",
-        "originalAllDay"
+    val NOT_WRITTEN_EVENT_COLUMNS = setOf(
+        "lastDate", "lastSynced", "displayColor", "hasAlarm", "hasExtendedProperties",
+        "canInviteOthers", "original_id", "originalAllDay"
     )
 
     /**
@@ -185,7 +196,9 @@ object ColumnPolicy {
         // to the right occurrence.
         Events.ORIGINAL_INSTANCE_TIME,
         // Opaque to us, but part of the event's payload: see NOT_COPIED_AS_IS above.
-        Events.CUSTOM_APP_PACKAGE, Events.CUSTOM_APP_URI
+        Events.CUSTOM_APP_PACKAGE, Events.CUSTOM_APP_URI,
+        // Sync-supplied rather than provider-computed: see NOT_WRITTEN_EVENT_COLUMNS above.
+        Events.HAS_ATTENDEE_DATA, Events.IS_ORGANIZER
     )
 
     val VERIFY_ATTENDEE_FIELDS = listOf(
@@ -203,8 +216,8 @@ object ColumnPolicy {
         "_id / calendar_id / original_id" to "local row identity, reassigned by the provider",
         "dirty / mutators / lastSynced" to "sync bookkeeping, set by the provider",
         "_sync_id / sync_data1..10 / cal_sync1..10" to "owned by the account's sync adapter",
-        "lastDate / displayColor / hasAlarm / hasAttendeeData / hasExtendedProperties / " +
-            "isOrganizer / canInviteOthers" to "computed by the provider",
+        "lastDate / displayColor / hasAlarm / canInviteOthers" to "computed by the provider",
+        "hasExtendedProperties" to "describes the ExtendedProperties table, which is not copied",
         "selfAttendeeStatus" to "copied from the attendee rows by the provider",
         "original_sync_id / originalAllDay" to "recurrence bookkeeping derived from the parent",
         "attendeeIdentity / attendeeIdNamespace" to

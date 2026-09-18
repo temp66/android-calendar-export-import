@@ -122,7 +122,9 @@ several distinct calendars inside one iCalendar object.
 | `guestsCanModify`, `guestsCanInviteOthers`, `guestsCanSeeGuests` | — | lost (iCalendar has no guest-permission concept) |
 | `customAppPackage`, `customAppUri` | — | lost (deep link into the source app's own event screen) |
 | `sync_data1` ... `sync_data10` | — | lost (private to the source sync adapter) |
-| `hasAlarm`, `hasExtendedProperties`, `hasAttendeeData`, `lastDate`, `isOrganizer`, `canInviteOthers`, `lastSynced` | — | derived or regenerated, not real loss |
+| `hasAlarm`, `lastDate`, `canInviteOthers`, `lastSynced` | — | derived or regenerated, not real loss |
+| `hasAttendeeData`, `isOrganizer` | — | lost: no iCalendar property carries them, and the destination falls back to its own defaults (its provider never recomputes them, so these are sync-supplied flags) |
+| `hasExtendedProperties` | — | lost, but it only describes the ExtendedProperties table, which iCalendar cannot carry either |
 | `calendar_id` | — | lost as identity: becomes a new calendar on import, and typically all sources collapse into one |
 | `account_name`, `account_type`, `_sync_id`, `dirty`, `mutators`, `deleted`, `canPartiallyUpdate`, `cal_sync1..10` | — | lost (sync bookkeeping, regenerated for the new account) |
 | `calendar_color`, `calendar_color_index`, `calendar_displayName`, `calendar_access_level`, `visible`, `calendar_timezone`, `sync_events`, `ownerAccount`, `canOrganizerRespond`, `canModifyTimeZone`, `maxReminders`, `allowedReminders`, `allowedAvailability`, `allowedAttendeeTypes`, `isPrimary` | — | lost; these are calendar-level and have no ICS carrier beyond the non-standard `X-WR-CALNAME` / `X-WR-TIMEZONE` |

@@ -85,9 +85,14 @@ loss". Sync bookkeeping belongs to the source account's adapter; row identity is
 the destination provider; `selfAttendeeStatus` is recomputed from the attendee rows, and only
 from the attendee whose address matches the destination calendar's owner account;
 `attendeeIdentity` and `attendeeIdNamespace` are the source account's identity namespace;
-`*_color_index` values are keys that may not resolve on the destination; and the `lastDate` /
-`displayColor` / `has*` / `isOrganizer` / `canInviteOthers` family is computed by
-the provider from the data that *is* copied.
+`*_color_index` values are keys that may not resolve on the destination; and `lastDate`,
+`displayColor`, `hasAlarm` and `canInviteOthers` are computed by the provider from the data that
+*is* copied.
+
+`hasAttendeeData` and `isOrganizer` are *not* in that family, despite the name: the provider never
+writes them, the sync adapter supplies them, and Google's own rows carry both as 1 even when an
+event has no attendee rows. They are copied like any other payload column. `hasExtendedProperties`
+is dropped only because the table it describes cannot be written at all.
 
 Each field has its own verdict and reason in the table below.
 

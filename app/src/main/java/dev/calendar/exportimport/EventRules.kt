@@ -62,7 +62,7 @@ object EventRules {
             if (column == ImportKeys.COLUMN) return@forEach
             if (column in ColumnPolicy.ALWAYS_DROP) return@forEach
             if (column in ColumnPolicy.PROVIDER_OWNED_EVENT_COLUMNS) return@forEach
-            if (column in ColumnPolicy.DERIVED_EVENT_COLUMNS) return@forEach
+            if (column in ColumnPolicy.NOT_WRITTEN_EVENT_COLUMNS) return@forEach
             if (column in ColumnPolicy.SYNC_ONLY_EVENT_COLUMNS) return@forEach
             if (column in ColumnPolicy.COLOR_KEY_COLUMNS) return@forEach
             if (column in ColumnPolicy.NOT_COPIED_AS_IS) return@forEach
