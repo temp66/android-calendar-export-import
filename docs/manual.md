@@ -138,8 +138,10 @@ triggers fill them.
 *Verify* re-reads the destination calendar and diffs it field by field against the backup. It
 compares exactly the columns the write path can preserve — including the null case of the colour
 fields, since a null colour means "inherit the calendar's colour" and must not become black — and
-compares attendees and reminders as sets. It then prints a fixed *not compared, and why* list, so
-that a known limitation never looks like a bug and a real one is never hidden.
+compares attendees and reminders as sets. A `null` in the backup and an empty string on the
+destination count as the same value, because that is how the provider stores a text column that
+was written as null. It then prints a fixed *not compared, and why* list, so that a known
+limitation never looks like a bug and a real one is never hidden.
 
 ## Building and testing
 

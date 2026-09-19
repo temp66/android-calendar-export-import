@@ -149,22 +149,38 @@ class Verifier(private val gateway: ProviderGateway) {
         }
 
     private fun attendeeSignature(row: Row): String =
-        ColumnPolicy.VERIFY_ATTENDEE_FIELDS.joinToString("|") { render(row[it]) }
+        signature(row, ColumnPolicy.VERIFY_ATTENDEE_FIELDS)
 
     private fun reminderSignature(row: Row): String =
-        ColumnPolicy.VERIFY_REMINDER_FIELDS.joinToString("|") { render(row[it]) }
+        signature(row, ColumnPolicy.VERIFY_REMINDER_FIELDS)
+
+    /** Set comparison for child rows; absent text is spelled the same way whatever form it takes. */
+    private fun signature(row: Row, fields: List<String>): String =
+        fields.joinToString("|") { field ->
+            val value = row[field]
+            if (isAbsentText(value)) NULL_TEXT else render(value)
+        }
 
     private fun sameValue(a: Any?, b: Any?): Boolean {
-        if (a == null && b == null) return true
+        // The provider stores an absent text column as "", so a value written as null reads back
+        // as an empty string. Treating those as different would report every copied event whose
+        // description, location or custom-app link was absent as a mismatch.
+        if (isAbsentText(a) && isAbsentText(b)) return true
         val la = a.asLongOrNull()
         val lb = b.asLongOrNull()
         if (la != null && lb != null) return la == lb
         return a == b
     }
 
+    private fun isAbsentText(value: Any?): Boolean = value == null || value == ""
+
     private fun render(value: Any?): String = when (value) {
-        null -> "null"
+        null -> NULL_TEXT
         is ByteArray -> "<${value.size} bytes>"
         else -> value.toString()
+    }
+
+    private companion object {
+        const val NULL_TEXT = "null"
     }
 }

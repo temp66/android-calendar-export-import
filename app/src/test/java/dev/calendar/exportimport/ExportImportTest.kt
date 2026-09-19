@@ -183,6 +183,27 @@ class ExportImportTest {
     }
 
     @Test
+    fun `an empty string and a null are the same value`() {
+        val destination = FakeGateway()
+        destination.addCalendar(100L, "My calendar", "me@example.test", "com.google")
+
+        val backup = backupOf(sourceDevice())
+        Importer(destination, {}).import(backup, 100L, setOf(1L, 2L), skipExisting = true)
+
+        // The provider stores an absent text column as "" rather than null, so a row written from
+        // a null comes back as an empty string.
+        destination.rows.getValue(Table.EVENTS).forEach { row ->
+            listOf(Events.DESCRIPTION, Events.EVENT_LOCATION, Events.CUSTOM_APP_PACKAGE)
+                .forEach { column -> if (row[column] == null) row[column] = "" }
+        }
+
+        val report = Verifier(destination).verify(backup, 100L, setOf(1L, 2L))
+
+        assertTrue(report, report.contains("Events with field differences:   0"))
+        assertTrue(report, report.contains("No differences in the fields this import can preserve."))
+    }
+
+    @Test
     fun `verify reports a field that was altered after import`() {
         val destination = FakeGateway()
         destination.addCalendar(100L, "My calendar", "me@example.test", "com.google")

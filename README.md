@@ -27,7 +27,7 @@ columns the app touches is in [docs/field-table.md](docs/field-table.md).
 
 - Behaviour is implemented against the provider's real write path, read from AOSP; see
   [third_party/aosp](third_party/aosp) for the sources the rules were taken from.
-- 26 JVM tests drive the whole export → import → verify cycle against an in-memory fake provider
+- 27 JVM tests drive the whole export → import → verify cycle against an in-memory fake provider
   that enforces those same rules.
 - Scope: the destination account and calendar must already exist (case 1 of the four cases in the
   [manual](docs/manual.md#why-only-existing-account-existing-calendar)). Creating calendars or
