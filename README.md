@@ -27,10 +27,8 @@ columns the app touches is in [docs/field-table.md](docs/field-table.md).
 
 - Behaviour is implemented against the provider's real write path, read from AOSP; see
   [third_party/aosp](third_party/aosp) for the sources the rules were taken from.
-- 19 JVM tests drive the whole export → import → verify cycle against an in-memory fake provider
+- 26 JVM tests drive the whole export → import → verify cycle against an in-memory fake provider
   that enforces those same rules.
-- The APK has **not** been run against a real device yet: the environment it was built in has no
-  emulator and no phone. The in-app *Verify* screen is the acceptance test.
 - Scope: the destination account and calendar must already exist (case 1 of the four cases in the
   [manual](docs/manual.md#why-only-existing-account-existing-calendar)). Creating calendars or
   accounts is deliberately not implemented.
@@ -67,7 +65,9 @@ library version, so the build does not drift.
 adb install -r outputs/android-calendar-export-import-debug.apk
 ```
 
-Then follow the [manual](docs/manual.md) for the two-device procedure.
+Then follow the [manual](docs/manual.md) for the two-device procedure — and sync the source
+account first: the export reads the device's provider, so it can only see events that have
+already been synced down to it.
 
 ## Repository layout
 

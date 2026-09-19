@@ -49,17 +49,22 @@ no storage permissions: files are chosen through the system file picker.
 On the **source** device:
 
 1. Grant calendar access.
-2. *Export to file*, pick a location, and remember the file. Per-table row counts are logged.
+2. Sync the account first, and let it finish. The export reads the device's own provider, so it
+   sees only what has already come down: an event that exists only in the cloud, or that was added
+   on another device since the last sync, is not there yet. With a Google account, open Google
+   Calendar and pull down to refresh, or use Settings → Accounts → *Sync now* for the account.
+3. *Export to file*, pick a location, and remember the file. Per-table row counts are logged.
 
 Move the file to the target device (USB, SD card, cloud, whatever).
 
 On the **target** device:
 
-1. Make sure the destination account already has a calendar.
-2. *Choose backup file to import*.
-3. Pick the destination calendar, tick the source calendars you want, leave *Skip events already
+1. Grant calendar access.
+2. Make sure the destination account already has a calendar.
+3. *Choose backup file to import*.
+4. Pick the destination calendar, tick the source calendars you want, leave *Skip events already
    in the destination calendar* on, and press *Start import*.
-4. *Verify a backup against the destination* to compare what is now stored against the backup.
+5. *Verify a backup against the destination* to compare what is now stored against the backup.
    *Save last report* writes it to a file.
 
 Running the import twice with the skip option on creates nothing the second time: each event is
@@ -109,8 +114,24 @@ whether it is reproduced on the destination, and whether iCalendar could have ca
 - **Anything the source calendar app kept outside the provider** — its own database, notes,
   attachments, app-specific reminder semantics — is invisible to any provider-based tool.
 
-If the export reports zero rows, the source app is not using the system provider at all and this
-approach cannot reach its data.
+If the export reports zero rows, either the account has not been synced, or the source app is not
+using the system provider at all and this approach cannot reach its data.
+
+## Vendor forks
+
+This app is written against AOSP's `CalendarContract` and nothing else. A phone's ROM may ship a
+forked calendar provider with extra columns, extra tables and its own defaults, and the app does
+not take any of that into account: it reads and writes the AOSP columns, and leaves everything
+outside them alone. Whatever a vendor keeps only in its own columns is therefore neither exported
+nor restored, and on the destination those columns are left to the provider, which fills in its
+own values for the rows it inserts.
+
+That is deliberate. Such columns are not part of the API, their meaning is undocumented, and the
+provider maintains them for itself — writing them by hand risks fighting its own bookkeeping, and
+it may overwrite them anyway. For the specifics of a given device, read that device's provider
+instead of guessing: the schema in `/data/data/<provider package>/databases/calendar.db` (root)
+shows which columns the vendor added, which of them are `NOT NULL` without a default, and which
+triggers fill them.
 
 ## Verification
 
